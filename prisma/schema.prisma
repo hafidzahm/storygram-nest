@@ -20,6 +20,8 @@ model Users {
   email    String @unique
   role     Role
 
+  profile Profiles?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -29,6 +31,8 @@ enum Role {
   USER
 }
 
+// one to one retation users hasOne profiles
+// one to many relation profiles hasMany posts
 model Profiles {
   id     Int    @id @default(autoincrement())
   name   String @unique
@@ -36,16 +40,22 @@ model Profiles {
   age    Int
   UserId Int    @unique
 
+  user  Users   @relation(fields: [UserId], references: [id])
+  posts Posts[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+// many to many relation posts has many tags / tags has many posts
 model Posts {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   titlePost   String
   picturePost String?
   captionPost String
   ProfileId   Int
+  author      Profiles @relation(fields: [ProfileId], references: [id])
+  tags        Tags[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,6 +64,8 @@ model Posts {
 model Tags {
   id      Int    @id @default(autoincrement())
   tagName String @unique
+
+  posts Posts[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
