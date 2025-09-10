@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
-import { ZodValidationPipe } from 'src/pipes/schema.validation.pipes';
+import { ZodValidationPipe } from 'src/common/pipes/schema.validation.pipes';
 import { createUserSchemaValidation } from './schema/users.schema';
 
 @Controller('users')
