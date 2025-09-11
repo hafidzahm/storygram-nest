@@ -19,8 +19,12 @@ export class UsersController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(createUserSchemaValidation))
-  create(@Body() createUserDto: Prisma.UsersCreateInput) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: Prisma.UsersCreateInput) {
+    const result = await this.usersService.create(createUserDto);
+    return {
+      message: 'User created successfully',
+      user: result,
+    };
   }
 
   @Get()
