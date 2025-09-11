@@ -5,9 +5,11 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from 'src/modules/auth/auth.controller';
 import { UsersModule } from '../users/users.module';
 import { BcryptModule } from 'src/common/helpers/bcrypt/bcrypt.module';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UsersModule, PassportModule, BcryptModule],
+  imports: [UsersModule, PassportModule, BcryptModule, JwtModule, ConfigModule],
   providers: [AuthService, LocalStrategy],
   controllers: [AuthController],
 })

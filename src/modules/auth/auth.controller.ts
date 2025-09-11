@@ -1,12 +1,15 @@
 import { Controller, Post, UseGuards, Request } from '@nestjs/common';
 import { LocalAuthGuard } from 'src/common/guards/local-auth.guards';
+import { AuthService } from './auth.service';
+import { Users } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private auth: AuthService) {}
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: { user: any }): Promise<any> {
-    return await req.user;
+  login(@Request() req: { user: Users }): { access_token: string } {
+    return this.auth.login(req.user);
   }
 
   @UseGuards(LocalAuthGuard)
