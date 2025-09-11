@@ -5,10 +5,12 @@ import { Users } from '@prisma/client';
 import type { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guards';
 import type { RequestUser } from './request-auth.interface';
+import { Public } from 'src/common/metadatas/public.metadata';
 
 @Controller()
 export class AuthController {
   constructor(private auth: AuthService) {}
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   login(
@@ -18,17 +20,16 @@ export class AuthController {
     return this.auth.login(req.user, res);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Public()
+  @Get('profile/without')
+  logout() {
+    return {
+      message: 'Hello',
+    };
+  }
+
   @Get('profile')
   getProfile(@Request() req: RequestUser) {
     return req.user;
-  }
-  @UseGuards(LocalAuthGuard)
-  @Post('logout')
-  async logout(
-    @Request() req: { logout: () => Promise<void> },
-  ): Promise<{ message: string }> {
-    await req.logout();
-    return { message: 'Logged out successfully' };
   }
 }
