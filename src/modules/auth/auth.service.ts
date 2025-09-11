@@ -4,6 +4,7 @@ import { BcryptService } from 'src/common/helpers/bcrypt/bcrypt.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Users } from '@prisma/client';
+import type { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,12 @@ export class AuthService {
     }
     return null;
   }
-  login(user: Users) {
+  login(user: Users, response: Response) {
+    const expireAccessToken = new Date();
+    expireAccessToken.setTime(
+      expireAccessToken.getTime() +
+        parseInt(this.config.getOrThrow('JWT_EXPIRES_IN')),
+    );
     const payload = {
       username: user.username,
       sub: String(user.id),
@@ -34,10 +40,17 @@ export class AuthService {
       email: user.email,
       role: user.role,
     };
-    return {
-      access_token: this.jwt.sign(payload, {
-        secret: this.config.getOrThrow('JWT_SECRET'),
-      }),
-    };
+
+    const access_token = this.jwt.sign(payload, {
+      secret: this.config.getOrThrow('JWT_SECRET'),
+      expiresIn: parseInt(this.config.getOrThrow('JWT_EXPIRES_IN')) / 1000,
+    });
+
+    response.cookie('Authentication', access_token, {
+      httpOnly: true,
+      secure: this.config.getOrThrow('NODE_ENV') === 'production',
+      expires: expireAccessToken,
+    });
+    return { message: 'Login successfully' };
   }
 }
