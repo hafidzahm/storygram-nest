@@ -24,15 +24,20 @@ const errorMap: Record<
 
 @Catch()
 export class PrismaErrorFilter implements ExceptionFilter {
-  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
     const response = context.getResponse<Response>();
+    let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal server error';
 
-    const { code } = exception;
-    const { statusCode, message } = errorMap[code] ?? {
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Internal server error',
-    };
+    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      const { code } = exception;
+      statusCode = errorMap[code]?.statusCode as HttpStatus;
+      message = errorMap[code]?.message as string;
+    } else if (exception instanceof Prisma.PrismaClientValidationError) {
+      statusCode = HttpStatus.UNPROCESSABLE_ENTITY;
+      message = 'Validation error';
+    }
 
     response.status(statusCode).json({
       message,
