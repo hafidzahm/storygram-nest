@@ -6,6 +6,7 @@ import type { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guards';
 import type { RequestUser } from './request-auth.interface';
 import { Public } from 'src/common/metadatas/public.metadata';
+import { User } from 'src/common/decorators/user.decorator';
 
 @Controller()
 export class AuthController {
@@ -29,7 +30,7 @@ export class AuthController {
   }
 
   @Get('profile')
-  getProfile(@Request() req: RequestUser) {
-    return req.user;
+  getProfile(@User() user: RequestUser) {
+    return { loginUser: user };
   }
 }
