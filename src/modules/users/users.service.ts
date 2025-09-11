@@ -30,6 +30,12 @@ export class UsersService {
     });
   }
 
+  async findByEmail(email: string) {
+    return await this.prisma.users.findUnique({
+      where: { email },
+    });
+  }
+
   async update(id: number, updateUserDto: Prisma.UsersUpdateInput) {
     return await this.prisma.users.update({
       where: {
