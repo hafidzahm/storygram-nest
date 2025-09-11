@@ -49,13 +49,13 @@ model Profiles {
 
 // many to many relation posts has many tags / tags has many posts
 model Posts {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   titlePost   String
   picturePost String?
   captionPost String
   ProfileId   Int
-  author      Profiles @relation(fields: [ProfileId], references: [id])
-  tags        Tags[]
+  author      Profiles   @relation(fields: [ProfileId], references: [id])
+  tags        PostTags[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,8 +65,17 @@ model Tags {
   id      Int    @id @default(autoincrement())
   tagName String @unique
 
-  posts Posts[]
+  posts PostTags[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PostTags {
+  Posts   Posts @relation(fields: [postsId], references: [id])
+  postsId Int
+  Tags    Tags  @relation(fields: [tagsId], references: [id])
+  tagsId  Int
+
+  @@id([postsId, tagsId])
 }
