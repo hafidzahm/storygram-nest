@@ -9,6 +9,7 @@ async function bootstrap() {
   // Register global exception filters for HTTP and Prisma errors.
   app.use(cookieParser());
   app.useGlobalFilters(new PrismaErrorFilter(), new HttpExceptionFilter());
+  app.enableShutdownHooks();
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
