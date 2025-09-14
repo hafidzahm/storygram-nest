@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { BcryptService } from 'src/common/helpers/bcrypt/bcrypt.service';
 import { JwtService } from '@nestjs/jwt';
@@ -16,9 +16,14 @@ export class AuthService {
   ) {}
   async validateUser(email: string, password: string) {
     const findedUser = await this.user.findByEmail(email);
+    if (!findedUser) {
+      throw new UnauthorizedException(
+        ' Invalid login credentials. Check again email and password',
+      );
+    }
     const comparePassword = await this.bcrypt.comparePassword(
       password,
-      findedUser?.password as string,
+      findedUser?.password,
     );
 
     if (findedUser && comparePassword) {
