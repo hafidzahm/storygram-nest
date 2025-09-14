@@ -30,8 +30,9 @@ export class ProfilesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profilesService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const profile = await this.profilesService.findOne(+id);
+    return { profile };
   }
 
   // @Patch(':id')
