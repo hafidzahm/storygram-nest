@@ -33,7 +33,17 @@ export class ProfilesService {
   }
 
   findAll() {
-    return `This action returns all profiles`;
+    return this.prisma.profiles.findMany({
+      include: {
+        user: {
+          select: {
+            username: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
   }
 
   findOne(id: number) {

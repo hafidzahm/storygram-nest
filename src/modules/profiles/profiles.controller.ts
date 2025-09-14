@@ -25,8 +25,8 @@ export class ProfilesController {
   }
 
   @Get()
-  findAll() {
-    return this.profilesService.findAll();
+  async findAll() {
+    return { profiles: await this.profilesService.findAll() };
   }
 
   @Get(':id')
