@@ -10,3 +10,5 @@ export const createUserSchemaValidation = z.object({
   email: z.string('Email is required').email('Email must be email format'),
   role: z.enum(['ADMIN', 'USER']),
 });
+
+export type CreateUserSchema = z.infer<typeof createUserSchemaValidation>;
