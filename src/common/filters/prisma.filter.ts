@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
@@ -35,6 +36,7 @@ export class PrismaErrorFilter implements ExceptionFilter {
       statusCode = errorMap[code]?.statusCode as HttpStatus;
       message = errorMap[code]?.message as string;
     } else if (exception instanceof Prisma.PrismaClientValidationError) {
+      Logger.error(exception, 'UNPROCESSABLE_ENTITY');
       statusCode = HttpStatus.UNPROCESSABLE_ENTITY;
       message = 'Validation error';
     }
