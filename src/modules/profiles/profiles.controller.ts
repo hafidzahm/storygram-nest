@@ -25,13 +25,14 @@ export class ProfilesController {
   }
 
   @Get()
-  findAll() {
-    return this.profilesService.findAll();
+  async findAll() {
+    return { profiles: await this.profilesService.findAll() };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.profilesService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const profile = await this.profilesService.findOne(+id);
+    return { profile };
   }
 
   // @Patch(':id')

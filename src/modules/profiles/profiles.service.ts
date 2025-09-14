@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/helpers/db/prisma.service';
 import { BcryptService } from 'src/common/helpers/bcrypt/bcrypt.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -32,12 +32,39 @@ export class ProfilesService {
     return result;
   }
 
-  findAll() {
-    return `This action returns all profiles`;
+  async findAll() {
+    return await this.prisma.profiles.findMany({
+      include: {
+        user: {
+          select: {
+            username: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  async findOne(id: number) {
+    const profile = await this.prisma.profiles.findUnique({
+      where: {
+        UserId: id,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
+    if (!profile) {
+      throw new NotFoundException('Profile user not found');
+    }
+    return profile;
   }
 
   // update(id: number, updateProfileDto: Prisma.ProfilesUpdateInput) {
