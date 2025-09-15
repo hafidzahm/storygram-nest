@@ -39,9 +39,9 @@ model Profiles {
   name   String @unique
   gender String
   age    Int
-  UserId Int    @unique
+  UserId Int?   @unique
 
-  user  Users   @relation(fields: [UserId], references: [id])
+  user  Users?  @relation(fields: [UserId], references: [id])
   posts Posts[]
 
   createdAt DateTime @default(now())

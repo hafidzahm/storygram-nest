@@ -21,6 +21,7 @@ const errorMap: Record<
     message: 'Resource already exists',
   }, // 409 CONFLICT
   P2005: { statusCode: HttpStatus.NOT_FOUND, message: 'Resource not found' }, // 400 NOT FOUND
+  P2025: { statusCode: HttpStatus.NOT_FOUND, message: 'No record was found' },
 };
 
 @Catch()
@@ -28,8 +29,11 @@ export class PrismaErrorFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
     const response = context.getResponse<Response>();
+    const type = 'PrismaErrorInstance';
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
+
+    Logger.debug(exception, 'INTERNAL_SERVER_ERROR');
 
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       const { code } = exception;
@@ -42,6 +46,7 @@ export class PrismaErrorFilter implements ExceptionFilter {
     }
 
     response.status(statusCode).json({
+      type,
       message,
       statusCode,
     });
