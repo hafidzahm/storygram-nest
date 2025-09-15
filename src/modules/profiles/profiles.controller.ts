@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   UsePipes,
+  HttpCode,
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { ZodValidationPipe } from 'src/common/pipes/schema.validation.pipes';
@@ -44,7 +45,14 @@ export class ProfilesController {
   //   }  @P
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profilesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const result = await this.profilesService.remove(+id);
+    return {
+      status: Object.prototype.hasOwnProperty.call(
+        result[0],
+        'count',
+      ) as boolean,
+      message: `Username ${result[1].username} succesfully deleted`,
+    };
   }
 }
