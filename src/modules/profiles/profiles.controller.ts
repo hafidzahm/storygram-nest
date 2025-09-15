@@ -14,6 +14,7 @@ import {
   type CreateProfileDto,
   createProfileSchema,
 } from './dto/create-profile.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('profiles')
 export class ProfilesController {
@@ -30,6 +31,7 @@ export class ProfilesController {
     return { profiles: await this.profilesService.findAll() };
   }
 
+  @Roles(['USER', 'ADMIN'])
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const profile = await this.profilesService.findOne(+id);
