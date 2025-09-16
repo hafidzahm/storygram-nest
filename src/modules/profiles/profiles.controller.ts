@@ -15,17 +15,19 @@ import {
   createProfileSchema,
 } from './dto/create-profile.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { Public } from 'src/common/metadatas/public.metadata';
 
-@Controller('profiles')
+@Controller('/api/profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
-
+  @Public()
   @Post()
   @UsePipes(new ZodValidationPipe(createProfileSchema))
   create(@Body() createProfileDto: CreateProfileDto) {
     return this.profilesService.create(createProfileDto);
   }
 
+  @Roles(['USER', 'ADMIN'])
   @Get()
   async findAll() {
     return { profiles: await this.profilesService.findAll() };
@@ -46,6 +48,7 @@ export class ProfilesController {
   //     return this.profilesService.update(+id, updateProfileDto);
   //   }  @P
 
+  @Roles(['USER', 'ADMIN'])
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const result = await this.profilesService.remove(+id);

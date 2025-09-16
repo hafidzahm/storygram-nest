@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "reset:test": "dotenv -e .env.testing -- prisma migrate reset --force",
+    "test:e2e": "node --env-file .env.testing ./node_modules/.bin/jest --watch -i --no-cache --config ./test/jest-e2e.json",
+    "test:int": "node --env-file .env.testing jest -i --no-cache --watch --config ./test/jest-int.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -30,6 +32,7 @@
     "@prisma/client": "^6.15.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "dotenv-cli": "^10.0.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -42,7 +45,7 @@
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
+    "@nestjs/testing": "^11.1.6",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.0",
