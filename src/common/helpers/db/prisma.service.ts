@@ -30,4 +30,12 @@ export class PrismaService
     Logger.log('Prisma disconnected', 'PrismaService');
     await this.$disconnect();
   }
+
+  async cleanDatabase() {
+    if (process.env.NODE_ENV === 'PRODUCTION') return;
+
+    const models = Reflect.ownKeys(this).filter((key) => key[0] !== '_');
+
+    return Promise.all(models.map((modelKey) => this[modelKey].deleteMany()));
+  }
 }
