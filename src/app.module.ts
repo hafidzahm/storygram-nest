@@ -7,9 +7,17 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guards';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { RolesGuard } from './common/guards/roles.guards';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProfilesModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
+    UsersModule,
+    ProfilesModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
