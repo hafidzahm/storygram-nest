@@ -73,7 +73,12 @@ export class ProfilesService {
 
   async remove(id: number) {
     return await this.prisma.$transaction([
-      this.prisma.profiles.deleteMany({
+      this.prisma.users.findUnique({
+        where: {
+          id,
+        },
+      }),
+      this.prisma.profiles.delete({
         where: {
           UserId: id,
         },

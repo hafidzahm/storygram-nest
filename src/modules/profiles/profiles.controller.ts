@@ -23,8 +23,11 @@ export class ProfilesController {
   @Public()
   @Post()
   @UsePipes(new ZodValidationPipe(createProfileSchema))
-  create(@Body() createProfileDto: CreateProfileDto) {
-    return this.profilesService.create(createProfileDto);
+  async create(@Body() createProfileDto: CreateProfileDto) {
+    return {
+      message: 'Profile successfully created',
+      profile: await this.profilesService.create(createProfileDto),
+    };
   }
 
   @Roles(['USER', 'ADMIN'])
@@ -53,11 +56,7 @@ export class ProfilesController {
   async remove(@Param('id') id: string) {
     const result = await this.profilesService.remove(+id);
     return {
-      status: Object.prototype.hasOwnProperty.call(
-        result[0],
-        'count',
-      ) as boolean,
-      message: `Username ${result[1].username} succesfully deleted`,
+      message: `Username ${result[2].username} succesfully deleted`,
     };
   }
 }
