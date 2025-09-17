@@ -43,65 +43,60 @@ export class PrismaService
     await this.tags.deleteMany(); // Delete tags after posts and postTags
     await this.profiles.deleteMany(); // Profiles reference Users
     await this.users.deleteMany(); // Users can be deleted last
+    console.log('database cleaned');
   }
 
   async userTesting() {
-    const userData = [
-      {
-        email: 'percobaan@gmail.com',
-        password: await this.bcrypt.hashPassword('12345'),
-        role: Role.ADMIN,
-        username: 'admin',
-      },
-      {
-        email: 'user@gmail.com',
-        password: await this.bcrypt.hashPassword('123456'),
-        role: Role.USER,
-        username: 'user1',
-      },
-      {
-        email: 'percobaan2@gmail.com', // Changed to avoid duplicate email
-        password: await this.bcrypt.hashPassword('1234567'),
-        role: Role.USER,
-        username: 'percobaan',
-      },
-    ];
-
-    // First, create users
-    const createdUsers: Array<Awaited<ReturnType<typeof this.users.create>>> =
-      [];
-    for (const user of userData) {
-      const createdUser = await this.users.create({
-        data: user,
-      });
-      createdUsers.push(createdUser);
-    }
-
-    // Then create profiles with UserId references
-    const profileData = [
-      {
+    await this.profiles.create({
+      data: {
         name: 'admin',
         age: 23,
         gender: 'MALE',
-        UserId: createdUsers[0].id,
+        user: {
+          create: {
+            email: 'percobaan@gmail.com',
+            password: await this.bcrypt.hashPassword('12345'),
+            role: Role.ADMIN,
+            username: 'admin',
+          },
+        },
       },
-      {
+    });
+    console.log('user admin created');
+
+    await this.profiles.create({
+      data: {
         name: 'user1',
         age: 23,
         gender: 'MALE',
-        UserId: createdUsers[1].id,
+        user: {
+          create: {
+            email: 'user@gmail.com',
+            password: await this.bcrypt.hashPassword('123456'),
+            role: Role.USER,
+            username: 'user1',
+          },
+        },
       },
-      {
+    });
+    console.log('user user created');
+
+    await this.profiles.create({
+      data: {
         name: 'percobaan',
         age: 23,
         gender: 'MALE',
-        UserId: createdUsers[2].id,
+        user: {
+          create: {
+            email: 'percobaan2@gmail.com', // Changed to avoid duplicate email
+            password: await this.bcrypt.hashPassword('1234567'),
+            role: Role.USER,
+            username: 'percobaan',
+          },
+        },
       },
-    ];
-
-    return await this.profiles.createMany({
-      data: profileData,
     });
+    console.log('user percobaan created');
   }
 
   async cleanDbAndCreateProfileTesting() {
