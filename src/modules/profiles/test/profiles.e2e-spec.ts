@@ -120,9 +120,22 @@ describe('Profile Controller with Login', () => {
   });
   it('GET user by id with LOGIN SHOULD RETURN 200', async () => {
     const response = await request(app.getHttpServer())
-      .get('/api/profiles/1')
+      .get('/api/profiles/3')
       .set('Cookie', adminCookie);
     expect(response.status).toEqual(200);
+    expect(response.body).toHaveProperty('profile');
+    expect(response.body.profile).toBeInstanceOf(Object);
+    expect(response.body.profile).toHaveProperty('UserId');
+    expect(response.body.profile).toHaveProperty('age');
+    expect(response.body.profile).toHaveProperty('gender');
+    expect(response.body.profile).toHaveProperty('id');
+    expect(response.body.profile).toHaveProperty('name');
+    expect(response.body.profile).toHaveProperty('user');
+    expect(response.body.profile.user).toBeInstanceOf(Object);
+    expect(response.body.profile.user).toHaveProperty('email');
+    expect(response.body.profile.user).toHaveProperty('role');
+    expect(response.body.profile.user).toHaveProperty('username');
+
     return response;
   });
 });
