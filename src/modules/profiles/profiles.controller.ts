@@ -7,6 +7,7 @@ import {
   Delete,
   UsePipes,
   HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { ZodValidationPipe } from 'src/common/pipes/schema.validation.pipes';
@@ -16,6 +17,10 @@ import {
 } from './dto/create-profile.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Public } from 'src/common/metadatas/public.metadata';
+import {
+  updateProfileSchema,
+  type UpdateProfileDto,
+} from './dto/update-profile.dto';
 
 @Controller('/api/profiles')
 export class ProfilesController {
@@ -43,13 +48,13 @@ export class ProfilesController {
     return { profile };
   }
 
-  // @Patch(':id')
-  //   update(
-  //     @Param('id') id: string,
-  //     @Body() updateProfileDto: Prisma.ProfilesUpdateInput,
-  //   ) {
-  //     return this.profilesService.update(+id, updateProfileDto);
-  //   }  @P
+  @Roles(['USER', 'ADMIN'])
+  @Patch(':id')
+  @UsePipes(new ZodValidationPipe(updateProfileSchema))
+  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
+    const result = this.profilesService.update(+id, updateProfileDto);
+    return result;
+  }
 
   @Roles(['USER', 'ADMIN'])
   @Delete(':id')

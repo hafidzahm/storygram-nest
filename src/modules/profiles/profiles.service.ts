@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/helpers/db/prisma.service';
 import { BcryptService } from 'src/common/helpers/bcrypt/bcrypt.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfilesService {
@@ -67,9 +68,22 @@ export class ProfilesService {
     return profile;
   }
 
-  // update(id: number, updateProfileDto: Prisma.ProfilesUpdateInput) {
-  //   return `This action updates a #${id} profile`;
-  // }
+  async update(id: number, updateProfileDto: UpdateProfileDto) {
+    const uniqueUser = await this.prisma.profiles.findUnique({
+      where: {
+        UserId: id,
+      },
+    });
+
+    if (!uniqueUser) {
+      throw new NotFoundException('Profile not found');
+    }
+
+    return {
+      message: `This action updates a #${id} profile`,
+      data: updateProfileDto,
+    };
+  }
 
   async remove(id: number) {
     return await this.prisma.$transaction([
