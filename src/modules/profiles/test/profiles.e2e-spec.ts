@@ -72,6 +72,27 @@ describe('Profiles Controller Without Login ', () => {
     expect(response.body.profile).toHaveProperty('id');
     expect(response.body.profile).toHaveProperty('UserId');
   });
+  it('UPDATE USER WITHOUT LOGIN SHOULD not found (401)', async () => {
+    const requestObject = {
+      name: 'admin_baru',
+      age: 24,
+      gender: 'MALE',
+    };
+
+    interface ResponseBody {
+      message: string;
+      method: string;
+      statusCode: number;
+    }
+
+    const response = await request(app.getHttpServer())
+      .patch('/api/profiles/4')
+      .send(requestObject);
+
+    expect(response.status).toEqual(401);
+    expect(response.body as ResponseBody).toHaveProperty('message');
+    expect((response.body as ResponseBody).message).toEqual('Unauthorized');
+  });
   it('DELETE NEW USER UNAUTHORIZED (401) ', async () => {
     const response = await request(app.getHttpServer()).delete(
       '/api/profiles/4',
@@ -135,6 +156,51 @@ describe('Profile Controller with Login', () => {
 
     return response;
   });
+  it('UPDATE USER AFTER LOGIN SHOULD RETURN (200)', async () => {
+    const requestObject = {
+      name: 'admin_baru',
+      age: 24,
+      gender: 'MALE',
+    };
+
+    interface ResponseBody {
+      data: {
+        UserId: number;
+        age: number;
+        createdAt: string;
+        gender: string;
+        id: number;
+        name: string;
+        updatedAt: string;
+      };
+      message: string;
+    }
+
+    const response = await request(app.getHttpServer())
+      .patch('/api/profiles/4')
+      .send(requestObject)
+      .set('Cookie', adminCookie);
+    expect(response.status).toEqual(200);
+    expect(response.body).toHaveProperty('message');
+    expect((response.body as ResponseBody).message).toEqual(
+      'Profile updated successfully',
+    );
+    expect(response.body as ResponseBody).toHaveProperty('data');
+    expect((response.body as ResponseBody).data).toHaveProperty('UserId');
+    expect((response.body as ResponseBody).data).toHaveProperty('age');
+    expect((response.body as ResponseBody).data.age).toEqual(requestObject.age);
+    expect((response.body as ResponseBody).data).toHaveProperty('createdAt');
+    expect((response.body as ResponseBody).data).toHaveProperty('updatedAt');
+    expect((response.body as ResponseBody).data).toHaveProperty('gender');
+    expect((response.body as ResponseBody).data.gender).toEqual(
+      requestObject.gender,
+    );
+    expect((response.body as ResponseBody).data).toHaveProperty('id');
+    expect((response.body as ResponseBody).data).toHaveProperty('name');
+    expect((response.body as ResponseBody).data.name).toEqual(
+      requestObject.name,
+    );
+  });
   it('DELETE NEW USER with LOGIN SHOULD RETURN (200) ', async () => {
     const response = await request(app.getHttpServer())
       .delete('/api/profiles/4')
@@ -155,6 +221,33 @@ describe('Profile Controller with Login', () => {
     expect(response.body.statusCode).toEqual(404);
     expect(response.body).toHaveProperty('type');
     expect(response.body.type).toEqual('PrismaErrorInstance');
+  });
+  it('UPDATE USER AFTER LOGIN SHOULD not found (404)', async () => {
+    const requestObject = {
+      name: 'admin_baru',
+      age: 24,
+      gender: 'MALE',
+    };
+
+    interface ResponseBody {
+      message: string;
+      method: string;
+      statusCode: number;
+    }
+
+    const response = await request(app.getHttpServer())
+      .patch('/api/profiles/4')
+      .send(requestObject)
+      .set('Cookie', adminCookie);
+    expect(response.status).toEqual(404);
+    expect(response.body as ResponseBody).toHaveProperty('message');
+    expect((response.body as ResponseBody).message).toEqual(
+      'Profile not found',
+    );
+    expect(response.body as ResponseBody).toHaveProperty('method');
+    expect((response.body as ResponseBody).method).toEqual('PATCH');
+    expect(response.body as ResponseBody).toHaveProperty('statusCode');
+    expect((response.body as ResponseBody).statusCode).toEqual(404);
   });
 });
 
