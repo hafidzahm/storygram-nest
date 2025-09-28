@@ -79,9 +79,22 @@ export class ProfilesService {
       throw new NotFoundException('Profile not found');
     }
 
+    const updateUser = await this.prisma.profiles.update({
+      where: {
+        UserId: id,
+      },
+      data: {
+        age: updateProfileDto.age,
+        gender: updateProfileDto.gender,
+        name: updateProfileDto.name,
+        UserId: id,
+        updatedAt: new Date().toISOString(),
+      },
+    });
+
     return {
-      message: `This action updates a #${id} profile`,
-      data: updateProfileDto,
+      message: `Profile updated successfully`,
+      data: updateUser,
     };
   }
 
